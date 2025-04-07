@@ -1,0 +1,34 @@
+# Ignorar archivos de compilación de Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignorar entornos virtuales (como virtualenv o venv)
+venv/
+env/
+.venv/
+
+# Ignorar archivos de configuración específicos de IDEs
+.vscode/
+.idea/
+
+# Ignorar archivos de log
+*.log
+
+# Ignorar archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Ignorar archivos de respaldo y temporales
+*.bak
+*.swp
+
+# Ignorar configuraciones de prueba
+*.coverage
+*.nosetests
+
+# Ignorar archivos generados por el sistema de construcción (build)
+build/
+dist/
+*.egg-info/
