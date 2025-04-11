@@ -2,4 +2,5 @@ fastapi
 uvicorn
 bandit
 radon
+pydantic-settings
 
