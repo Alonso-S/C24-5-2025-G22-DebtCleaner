@@ -1,5 +1,5 @@
 import express from 'express';
-import { PORT } from './config/index';
+import { PORT } from './config';
 
 const app = express();
 app.get('/', (_req, res) => {
