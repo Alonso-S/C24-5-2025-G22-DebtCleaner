@@ -9,9 +9,11 @@
 
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
-    "module": "esnext",
     "target": "es2024",
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "types": ["node"],
+    "typeRoots": ["src/common/types", "node_modules/@types"],
     // For nodejs:
     // "lib": ["esnext"],
     // "types": ["node"],
@@ -40,7 +42,8 @@
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "noEmit": true
   },
   "include": ["src/**/*"],
   "exclude": ["dist"]
