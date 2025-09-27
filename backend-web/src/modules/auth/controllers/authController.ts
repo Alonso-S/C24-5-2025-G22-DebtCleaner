@@ -2,7 +2,11 @@ import type { Request, Response } from "express";
 import { authService } from "../services/authService";
 import { asEmail } from "../utils/emailUtils";
 import { APP_FRONTEND_URL, NODE_ENV } from "../../../config";
-import type { LoginRequestDto, VerifyCodeRequestDto, RefreshTokenRequestDto } from "../types/auth";
+import type {
+  LoginRequestDto,
+  VerifyCodeRequestDto,
+  RefreshTokenRequestDto,
+} from "../types/auth";
 
 export const requestLoginCodeHandler = async (
   req: Request,
@@ -57,12 +61,12 @@ export const verifyLoginCodeHandler = async (req: Request, res: Response) => {
     }
 
     // Enviar refresh token como cookie
-    res.cookie('refreshToken', result.refreshToken, {
+    res.cookie("refreshToken", result.refreshToken, {
       httpOnly: true,
-      secure: NODE_ENV === 'production',
-      sameSite: NODE_ENV === 'production' ? 'none' : 'lax',
+      secure: NODE_ENV === "production",
+      sameSite: NODE_ENV === "production" ? "none" : "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 días
-      path: '/api/auth/refresh-token', // Solo accesible para la ruta de refresh
+      path: "/api/auth/refresh-token", // Solo accesible para la ruta de refresh
     });
 
     return res.status(200).json({
@@ -105,32 +109,32 @@ export const refreshTokenHandler = async (req: Request, res: Response) => {
   try {
     // Obtener el refresh token de las cookies en lugar del body
     const refreshToken = req.cookies.refreshToken;
-    
+
     if (!refreshToken) {
       return res.status(400).json({
         success: false,
-        message: "Refresh token no proporcionado"
+        message: "Refresh token no proporcionado",
       });
     }
-    
+
     const result = await authService.refreshAccessToken(refreshToken);
-    
+
     if (!result) {
       return res.status(401).json({
         success: false,
-        message: "Refresh token inválido o expirado"
+        message: "Refresh token inválido o expirado",
       });
     }
-    
+
     // Actualizar la cookie con el nuevo refresh token
-    res.cookie('refreshToken', result.refreshToken, {
+    res.cookie("refreshToken", result.refreshToken, {
       httpOnly: true,
-      secure: NODE_ENV === 'production',
-      sameSite: NODE_ENV === 'production' ? 'none' : 'lax',
+      secure: NODE_ENV === "production",
+      sameSite: NODE_ENV === "production" ? "none" : "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 días
-      path: '/api/auth/refresh-token',
+      path: "/api/auth/refresh-token",
     });
-    
+
     return res.status(200).json({
       success: true,
       accessToken: result.accessToken,
@@ -139,7 +143,7 @@ export const refreshTokenHandler = async (req: Request, res: Response) => {
   } catch (error) {
     return res.status(400).json({
       success: false,
-      message: (error as Error).message
+      message: (error as Error).message,
     });
   }
 };

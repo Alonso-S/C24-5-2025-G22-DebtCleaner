@@ -5,7 +5,7 @@ import { PrismaClient } from "./generated/prisma";
 import { errorHandler } from "./common/middleware/errorHandler";
 import { authRouter } from "./modules/auth/routes/authRouter";
 import { userRouter } from "./modules/user/routes/userRouter";
-
+import cookieParser from "cookie-parser";
 // Inicializar cliente de Prisma
 export const prisma = new PrismaClient();
 
@@ -16,6 +16,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(morgan("dev"));
+app.use(cookieParser());
 
 // Rutas
 app.use("/api/auth", authRouter);
