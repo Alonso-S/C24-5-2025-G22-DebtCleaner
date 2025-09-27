@@ -56,10 +56,19 @@ export const verifyLoginCodeHandler = async (req: Request, res: Response) => {
       });
     }
 
+    // Enviar refresh token como cookie
+    res.cookie('refreshToken', result.refreshToken, {
+      httpOnly: true,
+      secure: NODE_ENV === 'production',
+      sameSite: NODE_ENV === 'production' ? 'none' : 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 días
+      path: '/api/auth/refresh-token', // Solo accesible para la ruta de refresh
+    });
+
     return res.status(200).json({
       success: true,
       accessToken: result.accessToken,
-      refreshToken: result.refreshToken,
+      // Ya no enviamos el refreshToken en el cuerpo de la respuesta
     });
   } catch (error) {
     return res.status(400).json({
@@ -94,7 +103,8 @@ export const googleCallbackHandler = async (req: Request, res: Response) => {
 
 export const refreshTokenHandler = async (req: Request, res: Response) => {
   try {
-    const { refreshToken } = req.body as RefreshTokenRequestDto;
+    // Obtener el refresh token de las cookies en lugar del body
+    const refreshToken = req.cookies.refreshToken;
     
     if (!refreshToken) {
       return res.status(400).json({
@@ -112,10 +122,19 @@ export const refreshTokenHandler = async (req: Request, res: Response) => {
       });
     }
     
+    // Actualizar la cookie con el nuevo refresh token
+    res.cookie('refreshToken', result.refreshToken, {
+      httpOnly: true,
+      secure: NODE_ENV === 'production',
+      sameSite: NODE_ENV === 'production' ? 'none' : 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 días
+      path: '/api/auth/refresh-token',
+    });
+    
     return res.status(200).json({
       success: true,
       accessToken: result.accessToken,
-      refreshToken: result.refreshToken
+      // Ya no enviamos el refreshToken en el cuerpo de la respuesta
     });
   } catch (error) {
     return res.status(400).json({
