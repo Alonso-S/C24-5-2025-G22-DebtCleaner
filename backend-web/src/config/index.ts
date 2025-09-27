@@ -24,3 +24,7 @@ export const JWT_REFRESH_EXPIRES_IN = getEnv(
 
 export const GMAIL_USER = getEnv("GMAIL_USER");
 export const GMAIL_APP_PASSWORD = getEnv("GMAIL_APP_PASSWORD");
+
+export const GOOGLE_CLIENT_ID = getEnv("GOOGLE_CLIENT_ID");
+export const GOOGLE_CLIENT_SECRET = getEnv("GOOGLE_CLIENT_SECRET");
+export const APP_FRONTEND_URL = getEnv("APP_FRONTEND_URL");
