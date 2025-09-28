@@ -25,6 +25,7 @@ model User {
   name           String
   email          String          @unique
   role           Role            @default(STUDENT)
+  githubToken    String?         // Token de acceso para GitHub OAuth
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
   createdCourses Course[]        @relation("CourseCreator")
@@ -77,16 +78,33 @@ model Project {
 }
 
 model ProjectSubmission {
-  id        Int      @id @default(autoincrement())
-  content   String
-  grade     Float?
-  feedback  String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  projectId Int
-  userId    Int
-  project   Project  @relation(fields: [projectId], references: [id])
-  user      User     @relation(fields: [userId], references: [id])
+  id                Int                      @id @default(autoincrement())
+  content           String?                  // Descripción o comentarios de la entrega
+  fileUrl           String?                  // URL del archivo ZIP subido
+  gitRepositoryUrl  String?                  // URL del repositorio Git
+  grade             Float?
+  feedback          String?
+  createdAt         DateTime                 @default(now())
+  updatedAt         DateTime                 @updatedAt
+  projectId         Int
+  userId            Int
+  project           Project                  @relation(fields: [projectId], references: [id])
+  user              User                     @relation(fields: [userId], references: [id])
+  versions          ProjectSubmissionVersion[]
 
   @@map("project_submissions")
+}
+
+model ProjectSubmissionVersion {
+  id                Int               @id @default(autoincrement())
+  versionNumber     Int               // Número secuencial de versión
+  fileUrl           String?           // URL del archivo ZIP de esta versión
+  gitCommitHash     String?           // Hash del commit en el repositorio Git
+  content           String?           // Descripción o comentarios de esta versión
+  createdAt         DateTime          @default(now())
+  submissionId      Int
+  submission        ProjectSubmission @relation(fields: [submissionId], references: [id])
+
+  @@unique([submissionId, versionNumber])
+  @@map("project_submission_versions")
 }
