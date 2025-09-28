@@ -6,6 +6,7 @@ import { errorHandler } from "./common/middleware/errorHandler";
 import { authRouter } from "./modules/auth/routes/authRouter";
 import { userRouter } from "./modules/user/routes/userRouter";
 import cookieParser from "cookie-parser";
+import courseRouter from "./modules/course/routes/courseRouter";
 // Inicializar cliente de Prisma
 export const prisma = new PrismaClient();
 
@@ -21,6 +22,7 @@ app.use(cookieParser());
 // Rutas
 app.use("/api/auth", authRouter);
 app.use("/api/users", userRouter);
+app.use("/api/courses", courseRouter);
 
 // Ruta de prueba
 app.get("/api/health", (req, res) => {
