@@ -28,3 +28,8 @@ export const GMAIL_APP_PASSWORD = getEnv("GMAIL_APP_PASSWORD");
 export const GOOGLE_CLIENT_ID = getEnv("GOOGLE_CLIENT_ID");
 export const GOOGLE_CLIENT_SECRET = getEnv("GOOGLE_CLIENT_SECRET");
 export const APP_FRONTEND_URL = getEnv("APP_FRONTEND_URL");
+
+// Configuración de GitHub OAuth
+export const GITHUB_CLIENT_ID = getEnv("GITHUB_CLIENT_ID", "");
+export const GITHUB_CLIENT_SECRET = getEnv("GITHUB_CLIENT_SECRET", "");
+export const GITHUB_REDIRECT_URI = getEnv("GITHUB_REDIRECT_URI", "http://localhost:3000/api/github/callback");
