@@ -36,6 +36,7 @@
     "google-auth-library": "^10.3.0",
     "googleapis": "^160.0.0",
     "ioredis": "^5.7.0",
+    "joi": "^18.0.1",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.1",
     "nodemailer": "^7.0.6",
