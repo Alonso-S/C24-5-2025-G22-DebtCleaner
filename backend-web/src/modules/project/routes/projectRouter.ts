@@ -2,7 +2,7 @@ import { Router } from "express";
 import { projectController } from "../controllers/projectController";
 import { projectValidator } from "../validators/projectValidator";
 import submissionRouter from "./submissionRouter";
-
+import commentRoutes from "./commentRoutes";
 const projectRouter = Router();
 
 // Rutas para proyectos
@@ -22,5 +22,6 @@ projectRouter.delete("/:id", projectController.deleteProject);
 
 // Rutas para entregas de proyectos
 projectRouter.use("/submissions", submissionRouter);
+projectRouter.use("/comments", commentRoutes);
 
 export default projectRouter;
