@@ -33,7 +33,7 @@ export const projectValidator = {
 
     updateProjectSubmission: Joi.object<UpdateProjectSubmissionDTO>({
       content: Joi.string().allow(null, ""),
-      grade: Joi.number().min(0).max(100).allow(null),
+      grade: Joi.number().min(0).max(20).allow(null),
       feedback: Joi.string().allow(null, ""),
     }).min(1), // Al menos un campo debe ser proporcionado
   },
@@ -67,8 +67,14 @@ export const projectValidator = {
     next();
   },
 
-  validateCreateProjectSubmission: (req: Request, res: Response, next: NextFunction) => {
-    const { error } = projectValidator.schemas.createProjectSubmission.validate(req.body);
+  validateCreateProjectSubmission: (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    const { error } = projectValidator.schemas.createProjectSubmission.validate(
+      req.body
+    );
 
     if (error) {
       return res.status(400).json({
@@ -81,10 +87,16 @@ export const projectValidator = {
     next();
   },
 
-  validateUpdateProjectSubmission: (req: Request, res: Response, next: NextFunction) => {
-    const { error } = projectValidator.schemas.updateProjectSubmission.validate(req.body);
+  validateUpdateProjectSubmission: (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    const { error } = projectValidator.schemas.updateProjectSubmission.validate(
+      req.body
+    );
 
-  if (error) {
+    if (error) {
       return res.status(400).json({
         success: false,
         message: "Validation error",
@@ -95,11 +107,14 @@ export const projectValidator = {
     next();
   },
 
-  validateUploadSubmissionFile: (req: Request, res: Response, next: NextFunction) => {
+  validateUploadSubmissionFile: (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     const schema = Joi.object<UploadSubmissionFileDTO>({
       projectId: Joi.number().integer().positive().required(),
       userId: Joi.number().integer().positive().required(),
-      fileUrl: Joi.string().required(),
       content: Joi.string().allow(null, ""),
     });
 
@@ -116,7 +131,11 @@ export const projectValidator = {
     next();
   },
 
-  validateConnectGitRepository: (req: Request, res: Response, next: NextFunction) => {
+  validateConnectGitRepository: (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     const schema = Joi.object<ConnectGitRepositoryDTO>({
       projectId: Joi.number().integer().positive().required(),
       userId: Joi.number().integer().positive().required(),
@@ -155,9 +174,13 @@ export const projectValidator = {
     next();
   },
 
-  validateGradeSubmission: (req: Request, res: Response, next: NextFunction) => {
+  validateGradeSubmission: (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     const schema = Joi.object({
-      grade: Joi.number().min(0).max(10).required(),
+      grade: Joi.number().min(0).max(20).required(),
       feedback: Joi.string().allow(null, ""),
     });
 

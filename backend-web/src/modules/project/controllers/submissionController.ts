@@ -1,7 +1,10 @@
 import type { Request, Response } from "express";
 import path from "path";
 import { projectService } from "../services/projectService";
-import type { UploadSubmissionFileDTO, ConnectGitRepositoryDTO } from "../types/project";
+import type {
+  UploadSubmissionFileDTO,
+  ConnectGitRepositoryDTO,
+} from "../types/project";
 
 /**
  * Controlador para la gestión de entregas de proyectos
@@ -32,12 +35,47 @@ export const submissionController = {
         fileUrl,
       };
 
-      const submission = await projectService.uploadSubmissionFile(data);
+      // Buscar si ya existe una entrega para este proyecto y usuario
+      let submission =
+        await projectService.getProjectSubmissionByProjectAndUser(
+          data.projectId,
+          data.userId
+        );
+
+      if (submission) {
+        // Actualizar la entrega existente
+        submission = await projectService.updateSubmissionFileUrl(
+          submission.id,
+          fileUrl
+        );
+      } else {
+        // Crear una nueva entrega
+        const submissionData = {
+          projectId: data.projectId,
+          userId: data.userId,
+          content: data.content || null,
+          fileUrl: fileUrl,
+        };
+        
+        // Primero creamos la entrega sin fileUrl
+        submission = await projectService.createProjectSubmission(submissionData);
+        
+        // Luego actualizamos explícitamente el fileUrl
+        submission = await projectService.updateSubmissionFileUrl(
+          submission.id,
+          fileUrl
+        );
+      }
+
+      // Obtener la entrega actualizada con todas sus versiones
+      const updatedSubmission = await projectService.getProjectSubmissionById(
+        submission.id
+      );
 
       return res.status(201).json({
         success: true,
         message: "Archivo subido correctamente",
-        data: submission,
+        data: updatedSubmission,
       });
     } catch (error: any) {
       return res.status(500).json({
@@ -70,8 +108,12 @@ export const submissionController = {
       });
     } catch (error: any) {
       // Determinar el código de estado basado en el tipo de error
-      const statusCode = error.message.includes("URL de repositorio Git no válida") ? 400 : 500;
-      
+      const statusCode = error.message.includes(
+        "URL de repositorio Git no válida"
+      )
+        ? 400
+        : 500;
+
       return res.status(statusCode).json({
         success: false,
         message: "Error al conectar el repositorio Git",
@@ -85,7 +127,9 @@ export const submissionController = {
     try {
       const submissionId = Number(req.params.submissionId);
 
-      const submission = await projectService.getProjectSubmissionById(submissionId);
+      const submission = await projectService.getProjectSubmissionById(
+        submissionId
+      );
 
       if (!submission) {
         return res.status(404).json({
@@ -134,5 +178,5 @@ export const submissionController = {
         error: error.message,
       });
     }
-  }
+  },
 };

@@ -13,9 +13,10 @@ router.get('/:submissionId', submissionController.getSubmission);
 router.put('/:submissionId', projectValidator.validateUpdateProjectSubmission, submissionController.updateSubmission);
 router.get('/:projectId/submissions', projectController.getProjectSubmissions);
 router.get('/:projectId/submissions/:userId', projectController.getStudentSubmission);
-router.post('/:projectId/submit', projectValidator.validateSubmitProject, projectController.submitProject);
-router.post('/:projectId/submit/file', uploadMiddleware.uploadZip, uploadMiddleware.handleUploadErrors, projectValidator.validateUploadSubmissionFile, projectController.submitProject);
-router.post('/:projectId/submit/git', projectValidator.validateConnectGitRepository, projectController.submitProject);
+
+// Estas rutas se eliminaron porque están incompletas y duplican la funcionalidad
+// de las rutas /upload y /git que usan submissionController
+
 router.put('/:submissionId/grade', projectValidator.validateGradeSubmission, projectController.gradeSubmission);
 router.get('/:submissionId/versions', projectController.getSubmissionVersions);
 

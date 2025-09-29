@@ -22,7 +22,13 @@ export const courseRepository = {
         },
       },
       include: {
-        creator: true,
+        creator: {
+          select: {
+            id: true,
+            name: true,
+            role: true,
+          },
+        },
       },
     });
   },
@@ -31,10 +37,22 @@ export const courseRepository = {
     return prisma.course.findUnique({
       where: { id },
       include: {
-        creator: true,
+        creator: {
+          select: {
+            id: true,
+            name: true,
+            role: true,
+          },
+        },
         enrollments: {
           include: {
-            user: true,
+            user: {
+              select: {
+                id: true,
+                name: true,
+                role: true,
+              },
+            },
           },
         },
         projects: true,
@@ -46,7 +64,13 @@ export const courseRepository = {
     return prisma.course.findUnique({
       where: { accessCode },
       include: {
-        creator: true,
+        creator: {
+          select: {
+            id: true,
+            name: true,
+            role: true,
+          },
+        },
       },
     });
   },
@@ -57,10 +81,22 @@ export const courseRepository = {
         creatorId,
       },
       include: {
-        creator: true,
+        creator: {
+          select: {
+            id: true,
+            name: true,
+            role: true,
+          },
+        },
         enrollments: {
           include: {
-            user: true,
+            user: {
+              select: {
+                id: true,
+                name: true,
+                role: true,
+              },
+            },
           },
         },
       },
@@ -75,7 +111,13 @@ export const courseRepository = {
       include: {
         course: {
           include: {
-            creator: true,
+            creator: {
+              select: {
+                id: true,
+                name: true,
+                role: true,
+              },
+            },
           },
         },
       },
@@ -93,8 +135,24 @@ export const courseRepository = {
         },
       },
       include: {
-        user: true,
-        course: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            role: true,
+          },
+        },
+        course: {
+          include: {
+            creator: {
+              select: {
+                id: true,
+                name: true,
+                role: true,
+              },
+            },
+          },
+        },
       },
     });
   },

@@ -46,10 +46,10 @@ export const projectController = {
       }
 
       return res.status(200).json(project);
-  } catch (error: unknown) {
-    console.error("Error al obtener proyecto:", error);
-    return res.status(500).json({ error: "Error al obtener el proyecto" });
-  }
+    } catch (error: unknown) {
+      console.error("Error al obtener proyecto:", error);
+      return res.status(500).json({ error: "Error al obtener el proyecto" });
+    }
   },
 
   async getProjectsByCourse(req: Request, res: Response) {
@@ -88,7 +88,10 @@ export const projectController = {
         dueDate: dueDate ? new Date(dueDate) : null,
       };
 
-      const project = await projectService.updateProject(projectId, projectData);
+      const project = await projectService.updateProject(
+        projectId,
+        projectData
+      );
       return res.status(200).json(project);
     } catch (error: unknown) {
       console.error("Error al actualizar proyecto:", error);
@@ -175,10 +178,10 @@ export const projectController = {
           .json({ error: "El ID de la entrega debe ser un número válido" });
       }
 
-      if (isNaN(Number(grade)) || Number(grade) < 0 || Number(grade) > 10) {
+      if (isNaN(Number(grade)) || Number(grade) < 0 || Number(grade) > 20) {
         return res
           .status(400)
-          .json({ error: "La calificación debe ser un número entre 0 y 10" });
+          .json({ error: "La calificación debe ser un número entre 0 y 20" });
       }
 
       const submission = await projectService.gradeSubmission(
@@ -211,7 +214,7 @@ export const projectController = {
       const submission = await projectService.submitProject({
         projectId,
         userId,
-        content: content || null
+        content: content || null,
       });
       return res.status(201).json(submission);
     } catch (error: unknown) {
