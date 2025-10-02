@@ -24,10 +24,6 @@ export type VerifyCodeRequestDto = {
   code: string;
 };
 
-export type RefreshTokenRequestDto = {
-  refreshToken: string;
-};
-
 export type VerifyCodeResponseDto = {
   token: string;
 };

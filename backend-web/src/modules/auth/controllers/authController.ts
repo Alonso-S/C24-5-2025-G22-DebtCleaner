@@ -2,11 +2,7 @@ import type { Request, Response } from "express";
 import { authService } from "../services/authService";
 import { asEmail } from "../utils/emailUtils";
 import { APP_FRONTEND_URL, NODE_ENV } from "../../../config";
-import type {
-  LoginRequestDto,
-  VerifyCodeRequestDto,
-  RefreshTokenRequestDto,
-} from "../types/auth";
+import type { LoginRequestDto, VerifyCodeRequestDto } from "../types/auth";
 
 export const requestLoginCodeHandler = async (
   req: Request,
@@ -139,6 +135,28 @@ export const refreshTokenHandler = async (req: Request, res: Response) => {
       success: true,
       accessToken: result.accessToken,
       // Ya no enviamos el refreshToken en el cuerpo de la respuesta
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: (error as Error).message,
+    });
+  }
+};
+
+export const logoutHandler = async (_req: Request, res: Response) => {
+  try {
+    // Eliminar la cookie de refreshToken
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: NODE_ENV === "production",
+      sameSite: NODE_ENV === "production" ? "none" : "lax",
+      path: "/api/auth/refresh-token",
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Logout exitoso",
     });
   } catch (error) {
     return res.status(400).json({
