@@ -9,6 +9,7 @@ import cookieParser from "cookie-parser";
 import courseRouter from "./modules/course/routes/courseRouter";
 import projectRouter from "./modules/project/routes/projectRouter";
 import { githubRouter } from "./modules/github/routes/githubRouter";
+import { APP_FRONTEND_URL } from "./config";
 // Inicializar cliente de Prisma
 export const prisma = new PrismaClient();
 
@@ -16,7 +17,12 @@ export const prisma = new PrismaClient();
 const app = express();
 
 // Middlewares
-app.use(cors());
+app.use(
+  cors({
+    origin: APP_FRONTEND_URL,
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(morgan("dev"));
 app.use(cookieParser());
