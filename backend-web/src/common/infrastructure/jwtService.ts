@@ -1,5 +1,10 @@
 import jwt from "jsonwebtoken";
-import { JWT_SECRET, JWT_EXPIRES_IN, JWT_REFRESH_SECRET, JWT_REFRESH_EXPIRES_IN } from "../../config";
+import {
+  JWT_SECRET,
+  JWT_EXPIRES_IN,
+  JWT_REFRESH_SECRET,
+  JWT_REFRESH_EXPIRES_IN,
+} from "../../config";
 import type { AuthUser } from "../../modules/auth/types/auth";
 
 /**
@@ -13,6 +18,7 @@ export const jwtService = {
     return jwt.sign(
       {
         id: user.id,
+        name: user.name,
         email: user.email,
         role: user.role,
       },
@@ -46,5 +52,5 @@ export const jwtService = {
    */
   verifyRefreshToken(token: string): any {
     return jwt.verify(token, JWT_REFRESH_SECRET);
-  }
+  },
 };
