@@ -1,6 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
 import { jwtService } from "../infrastructure/jwtService";
-import { authService } from "../../modules/auth/services/authService";
 
 /**
  * Middleware para verificar autenticación mediante JWT
@@ -14,45 +13,9 @@ export const authenticate = async (
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      // Si no hay token en el header, intentamos usar el refresh token de las cookies
-      const refreshToken = req.cookies.refreshToken;
-
-      if (refreshToken) {
-        try {
-          // Intentamos renovar el token usando el refresh token
-          const tokens = await authService.refreshAccessToken(refreshToken);
-
-          if (tokens) {
-            // Si se pudo renovar, establecemos el usuario y continuamos
-            const decoded = jwtService.verifyToken(tokens.accessToken);
-            req.user = decoded;
-
-            // Actualizamos la cookie con el nuevo refresh token
-            res.cookie("refreshToken", tokens.refreshToken, {
-              httpOnly: true,
-              secure: process.env.NODE_ENV === "production",
-              sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-              maxAge: 7 * 24 * 60 * 60 * 1000, // 7 días
-              path: "/api/auth/refresh-token",
-            });
-
-            // Añadimos el nuevo token al header para que el cliente lo reciba
-            res.setHeader("X-New-Access-Token", tokens.accessToken);
-
-            return next();
-          }
-        } catch (refreshError) {
-          // Si falla la renovación, registramos el error para depuración
-          console.error(
-            "Error al renovar token con refresh token:",
-            refreshError
-          );
-        }
-      }
-
       return res.status(401).json({
         success: false,
-        message: "No se proporcionó token de autenticación",
+        message: "Encabezado de autorización ausente o mal formado",
       });
     }
 
@@ -60,7 +23,7 @@ export const authenticate = async (
     if (!token) {
       return res.status(401).json({
         success: false,
-        message: "No se proporcionó token válido",
+        message: "Token ausente",
       });
     }
     const decoded = jwtService.verifyToken(token);
@@ -69,40 +32,6 @@ export const authenticate = async (
 
     next();
   } catch (error) {
-    // Si el token es inválido o expiró, intentamos usar el refresh token
-    const refreshToken = req.cookies.refreshToken;
-
-    if (refreshToken) {
-      try {
-        // Intentamos renovar el token usando el refresh token
-        const tokens = await authService.refreshAccessToken(refreshToken);
-
-        if (tokens) {
-          const decoded = jwtService.verifyToken(tokens.accessToken);
-          req.user = decoded;
-
-          // Actualizamos la cookie con el nuevo refresh token
-          res.cookie("refreshToken", tokens.refreshToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 días
-            path: "/api/auth/refresh-token",
-          });
-
-          res.setHeader("X-New-Access-Token", tokens.accessToken);
-
-          return next();
-        }
-      } catch (refreshError) {
-        // Si falla la renovación, registramos el error para depuración
-        console.error(
-          "Error al renovar token con refresh token:",
-          refreshError
-        );
-      }
-    }
-
     return res.status(401).json({
       success: false,
       message: "Token inválido o expirado",
