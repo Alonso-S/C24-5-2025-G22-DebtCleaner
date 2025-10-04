@@ -1,13 +1,36 @@
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+@import 'tailwindcss';
 
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  /* Color primario en formato RGB para usar con opacidades dinámicas */
+  --primary-rgb: 0, 178, 227;
+  --primary: rgb(var(--primary-rgb));
+  --primary-dark: rgb(0, 140, 179);
+  --primary-light: rgb(51, 204, 255);
+
+  /* Colores complementarios */
+  --accent-rgb: 255, 82, 170;
+  --accent: rgb(var(--accent-rgb));
+  --dark-rgb: 18, 24, 38;
+  --dark: rgb(var(--dark-rgb));
+
+  /* Gradientes predefinidos */
+  --gradient-primary: linear-gradient(135deg, var(--primary), var(--primary-light));
+  --gradient-cosmic: linear-gradient(135deg, #121826, #2a2f4f);
+  --gradient-glow: radial-gradient(
+    circle at center,
+    rgba(var(--primary-rgb), 0.8),
+    rgba(var(--primary-rgb), 0) 70%
+  );
+
+  font-family: 'Space Grotesk', system-ui, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color-scheme: light;
+  color: rgb(var(--dark-rgb));
+  background-color: #f8fafc;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -15,38 +38,70 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+/* Utilidades personalizadas */
+.text-balance {
+  text-wrap: balance;
 }
 
+.text-shadow-sm {
+  text-shadow: 0 1px 2px rgba(var(--dark-rgb), 0.1);
+}
+
+.text-shadow-lg {
+  text-shadow: 0 2px 4px rgba(var(--dark-rgb), 0.2);
+}
+
+.animate-fade {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.5s ease-out forwards;
+}
+
+.animate-pulse-subtle {
+  animation: pulsate 2s ease-in-out infinite;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes pulsate {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Estilos base */
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
   min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
+  background-image:
+    radial-gradient(circle at 20% 35%, rgba(var(--primary-rgb), 0.15) 0%, transparent 30%),
+    radial-gradient(circle at 80% 10%, rgba(var(--accent-rgb), 0.1) 0%, transparent 20%);
+  background-attachment: fixed;
+  overflow-x: hidden;
 }
 button:hover {
   border-color: #646cff;
@@ -54,17 +109,4 @@ button:hover {
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
 }
