@@ -9,6 +9,11 @@ interface DashboardLayoutProps<T extends string> {
   activeSection: T
   setActiveSection: (section: T) => void
 }
+const roleLabels: Record<string, string> = {
+  STUDENT: 'ESTUDIANTE',
+  ADMIN: 'ADMINISTRADOR',
+  PROFESSOR: 'PROFESOR',
+}
 
 export const DashboardLayout = <T extends string>({
   children,
@@ -64,7 +69,9 @@ export const DashboardLayout = <T extends string>({
               <div className="flex items-center gap-2">
                 <div className="hidden md:block text-right">
                   <p className="text-sm font-medium text-gray-700">{user?.name}</p>
-                  <p className="text-xs text-gray-500">ADMINISTRADOR</p>
+                  <p className="text-xs text-gray-500">
+                    {roleLabels[user?.role || ''] || user?.role || ''}
+                  </p>
                 </div>
                 <div className="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-medium">
                   {user?.name?.charAt(0) || 'A'}
