@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { LoginCodeForm } from '../components/LoginCodeForm'
 import { VerifyCodeForm } from '../components/VerifyCodeForm'
 import { useAuth } from '../hooks/useAuth'
-import type { User } from '../types'
+import { User } from '../../../shared/types'
 
 export const AuthPage = () => {
   const [step, setStep] = useState<'request-code' | 'verify-code'>('request-code')

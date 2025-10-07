@@ -1,10 +1,12 @@
-import { useState, useEffect, useCallback } from 'react'
-import { jwtDecode } from 'jwt-decode'
 import type { ReactNode } from 'react'
 
-import { authService } from '../../../services/auth.service'
-import type { JwtPayload, User } from '../types'
-import { AuthContext } from '../context/AuthContext'
+import { useState, useEffect, useCallback } from 'react'
+import { jwtDecode } from 'jwt-decode'
+import { authStore } from '../../shared/store/authStore'
+import { authService } from '../../modules/auth/services/auth.service'
+import type { JwtPayload } from '../../modules/auth/types'
+import { AuthContext } from '../../modules/auth/context/AuthContext'
+import type { User } from '../../shared/types'
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null)
@@ -16,6 +18,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setAccessToken(token)
     setUser(userData)
     setIsAuthenticated(true)
+    authStore.setToken(token) // Actualizar el token en authStore
   }
 
   // Función para cerrar sesión
@@ -24,6 +27,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setAccessToken(null)
     setUser(null)
     setIsAuthenticated(false)
+    authStore.clear() // Limpiar el token en authStore
   }
 
   // Función para refrescar el token (memorizada)

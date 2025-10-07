@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
-import { authService } from '../../../services/auth.service'
 import type { AuthError } from '../types'
 import axios from 'axios'
+import { authService } from '../services/auth.service'
 
 interface LoginCodeFormProps {
   onCodeSent: (email: string) => void

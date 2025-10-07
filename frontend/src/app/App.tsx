@@ -1,22 +1,40 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import './App.css'
-import { useAuth } from './features/auth/hooks/useAuth'
-import { AuthPage } from './features/auth/pages/AuthPage'
-import { AdminDashboard, StudentDashboard, ProfessorDashboard } from './features/dashboard'
+import { AuthPage } from '../modules/auth/pages/AuthPage'
+import { AdminDashboard, StudentDashboard, ProfessorDashboard } from '../modules/dashboard'
+import { AccessDenied } from '../modules/auth/pages/AccessDenied'
+
+import { useAuth } from '../modules/auth/hooks/useAuth'
+import type { Role } from '../shared/types'
 
 // Componente de protección de rutas
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated } = useAuth()
+const ProtectedRoute = ({
+  children,
+  requiredRole,
+}: {
+  children: React.ReactNode
+  requiredRole?: Role
+}) => {
+  const { isAuthenticated, user } = useAuth()
+
   if (!isAuthenticated) {
     return <Navigate to="/auth" replace />
   }
-  return children
+
+  // Si se especifica un rol requerido y el usuario no tiene ese rol, mostrar acceso denegado
+  if (requiredRole && user?.role !== requiredRole) {
+    return (
+      <AccessDenied message={`Necesitas permisos de ${requiredRole} para acceder a esta sección`} />
+    )
+  }
+
+  return <>{children}</>
 }
 
 // Componente para redirección basada en rol
 const RoleBasedRedirect = () => {
   const { user } = useAuth()
-  
+
   switch (user?.role) {
     case 'ADMIN':
       return <Navigate to="/dashboard/admin" replace />
@@ -36,16 +54,13 @@ const App = () => {
   return (
     <Router>
       <Routes>
-        <Route
-          path="/auth"
-          element={isAuthenticated ? <RoleBasedRedirect /> : <AuthPage />}
-        />
+        <Route path="/auth" element={isAuthenticated ? <RoleBasedRedirect /> : <AuthPage />} />
 
         {/* Rutas de dashboard específicas por rol */}
         <Route
           path="/dashboard/admin"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredRole="ADMIN">
               <AdminDashboard />
             </ProtectedRoute>
           }
@@ -54,7 +69,7 @@ const App = () => {
         <Route
           path="/dashboard/student"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredRole="STUDENT">
               <StudentDashboard />
             </ProtectedRoute>
           }
@@ -63,7 +78,7 @@ const App = () => {
         <Route
           path="/dashboard/professor"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredRole="PROFESSOR">
               <ProfessorDashboard />
             </ProtectedRoute>
           }

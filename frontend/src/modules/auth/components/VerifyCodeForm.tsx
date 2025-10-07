@@ -1,11 +1,10 @@
 import { useState, useEffect, useCallback } from 'react'
 import type { FormEvent } from 'react'
-
-import { authService } from '../../../services/auth.service'
-import type { JwtPayload, User } from '../types'
+import type { AuthError, JwtPayload } from '../types'
 import { jwtDecode } from 'jwt-decode'
-import type { AuthError } from '../types'
-import { AUTH_CONSTANTS } from '../types'
+import { User } from '../../../shared/types'
+import { AUTH_CONSTANTS } from '../../../core/config/constants/auth.constants'
+import { authService } from '../services/auth.service'
 
 interface VerifyCodeFormProps {
   email: string
@@ -28,35 +27,38 @@ export const VerifyCodeForm = ({ email, onVerificationSuccess, onBack }: VerifyC
   }, [timeLeft])
 
   // Manejar el envío del formulario
-  const handleSubmit = useCallback(async (e: FormEvent) => {
-    e.preventDefault()
-    setError(null)
+  const handleSubmit = useCallback(
+    async (e: FormEvent) => {
+      e.preventDefault()
+      setError(null)
 
-    if (code.length !== AUTH_CONSTANTS.VERIFICATION_CODE_LENGTH) {
-      setError(`El código debe tener ${AUTH_CONSTANTS.VERIFICATION_CODE_LENGTH} dígitos`)
-      return
-    }
-
-    try {
-      setLoading(true)
-      const response = await authService.verifyLoginCode({ email, code })
-      const accesToken = response.data.accessToken
-
-      const decoded = jwtDecode<JwtPayload>(accesToken)
-      const userData: User = {
-        id: decoded.id,
-        name: decoded.name,
-        email: decoded.email,
-        role: decoded.role,
+      if (code.length !== AUTH_CONSTANTS.VERIFICATION_CODE_LENGTH) {
+        setError(`El código debe tener ${AUTH_CONSTANTS.VERIFICATION_CODE_LENGTH} dígitos`)
+        return
       }
-      onVerificationSuccess(accesToken, userData)
-    } catch (err: unknown) {
-      const error = err as AuthError
-      setError(error.message || 'Código inválido o expirado')
-    } finally {
-      setLoading(false)
-    }
-  }, [code, email, onVerificationSuccess])
+
+      try {
+        setLoading(true)
+        const response = await authService.verifyLoginCode({ email, code })
+        const accesToken = response.data.accessToken
+
+        const decoded = jwtDecode<JwtPayload>(accesToken)
+        const userData: User = {
+          id: decoded.id,
+          name: decoded.name,
+          email: decoded.email,
+          role: decoded.role,
+        }
+        onVerificationSuccess(accesToken, userData)
+      } catch (err: unknown) {
+        const error = err as AuthError
+        setError(error.message || 'Código inválido o expirado')
+      } finally {
+        setLoading(false)
+      }
+    },
+    [code, email, onVerificationSuccess]
+  )
 
   // Manejar el reenvío del código
   const handleResendCode = useCallback(async () => {
@@ -137,7 +139,13 @@ export const VerifyCodeForm = ({ email, onVerificationSuccess, onBack }: VerifyC
               type="text"
               id="code"
               value={code}
-              onChange={(e) => setCode(e.target.value.replace(/[^0-9]/g, '').slice(0, AUTH_CONSTANTS.VERIFICATION_CODE_LENGTH))}
+              onChange={(e) =>
+                setCode(
+                  e.target.value
+                    .replace(/[^0-9]/g, '')
+                    .slice(0, AUTH_CONSTANTS.VERIFICATION_CODE_LENGTH)
+                )
+              }
               placeholder={`Ingresa el código de ${AUTH_CONSTANTS.VERIFICATION_CODE_LENGTH} dígitos`}
               maxLength={AUTH_CONSTANTS.VERIFICATION_CODE_LENGTH}
               required

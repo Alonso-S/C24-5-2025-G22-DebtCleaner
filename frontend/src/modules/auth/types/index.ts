@@ -1,9 +1,4 @@
-export interface User {
-  id: string
-  email: string
-  name: string
-  role: string
-}
+import { Role, User } from '../../../shared/types'
 
 export interface LoginCodeRequest {
   email: string
@@ -26,7 +21,7 @@ export interface VerifyCodeResponse {
     id: string
     email: string
     name: string
-    role: string
+    role: Role
   }
 }
 
@@ -47,16 +42,9 @@ export interface JwtPayload {
   id: string
   name: string
   email: string
-  role: string
+  role: Role
   iat: number
   exp: number
-}
-
-// Constantes para la autenticación
-export const AUTH_CONSTANTS = {
-  VERIFICATION_CODE_DURATION: 300, // Duración del código de verificación en segundos (5 minutos)
-  VERIFICATION_CODE_LENGTH: 6,     // Longitud del código de verificación
-  WARNING_TIME_THRESHOLD: 30       // Umbral de tiempo para mostrar advertencia (en segundos)
 }
 
 export interface AuthError {

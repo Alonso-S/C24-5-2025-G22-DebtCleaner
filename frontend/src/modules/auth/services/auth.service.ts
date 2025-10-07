@@ -1,12 +1,13 @@
-import { api } from './api'
 import type {
   LoginCodeRequest,
   LoginCodeResponse,
+  RefreshTokenResponse,
   VerifyCodeRequest,
   VerifyCodeResponse,
-} from '../features/auth/types'
+} from '../types'
+
 import type { AxiosResponse } from 'axios'
-import type { RefreshTokenResponse } from '../features/auth/types'
+import { api } from '../../../core/api/apiClient'
 
 export const authService = {
   /**
