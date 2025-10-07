@@ -1,12 +1,14 @@
 // Tipos para el módulo de autenticación
 
+import type { Role } from "../../user/types/user";
+
 export type Email = string & { readonly __brand: unique symbol };
 
 export type AuthUser = {
   id: number;
   name: string;
   email: Email;
-  role: string;
+  role: Role;
 };
 
 export type LoginRequestDto = {
