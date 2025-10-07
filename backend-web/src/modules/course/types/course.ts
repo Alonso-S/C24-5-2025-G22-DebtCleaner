@@ -4,6 +4,7 @@ import type {
   Project,
   User,
 } from "../../../generated/prisma";
+import type { Role } from "../../user/types/user";
 
 export type CourseDTO = {
   id: number;
@@ -20,7 +21,7 @@ export type UserDTO = {
   id: number;
   name: string;
   email: string;
-  role: string;
+  role: Role;
 };
 
 export type CreateCourseDTO = {

@@ -1,10 +1,12 @@
 import type { User } from "../../../generated/prisma";
 
+export type Role = 'STUDENT' | 'PROFESSOR' | 'ADMIN';
+
 export interface UserDTO {
   id: number;
   email: string;
   name: string;
-  role: string;
+  role: Role;
   createdAt: Date;
   updatedAt: Date;
 }
