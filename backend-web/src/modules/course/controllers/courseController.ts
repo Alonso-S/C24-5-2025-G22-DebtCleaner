@@ -10,6 +10,24 @@ import type {
  * Controlador para la gestión de cursos
  */
 export const courseController = {
+  async getStudentsByCourse(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      if (typeof id !== "string" || !/^\d+$/.test(id)) {
+        return res.status(400).json({ message: "ID de curso inválido" });
+      }
+      const courseId = parseInt(id, 10);
+      const students = await courseService.getStudentsByCourse(courseId);
+      return res.status(200).json(students);
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Error al obtener los estudiantes del curso";
+      return res.status(500).json({ message: errorMessage });
+    }
+  },
+
   /**
    * Crea un nuevo curso
    * @route POST /api/courses
@@ -34,6 +52,48 @@ export const courseController = {
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error ? error.message : "Error al crear el curso";
+      return res.status(500).json({ message: errorMessage });
+    }
+  },
+  async updateCourseById(req: Request, res: Response) {
+    try {
+      const { name, description } = req.body;
+      const creatorId = req.user?.id;
+
+      if (!creatorId) {
+        return res.status(401).json({ message: "Usuario no autenticado" });
+      }
+
+      const courseData: CreateCourseDTO = {
+        name,
+        description,
+        creatorId: Number(creatorId),
+      };
+
+      const course = await courseService.updateCourseById(
+        Number(req.params.id),
+        courseData
+      );
+      return res.status(201).json(course);
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Error al actualizar el curso";
+      return res.status(500).json({ message: errorMessage });
+    }
+  },
+
+  async deleteCourseById(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      if (typeof id !== "string" || !/^\d+$/.test(id)) {
+        return res.status(400).json({ message: "ID de curso inválido" });
+      }
+      const courseId = parseInt(id, 10);
+      await courseService.deleteCourseById(courseId);
+      return res.status(204).json({ message: "Curso eliminado con éxito" });
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Error al eliminar el curso";
       return res.status(500).json({ message: errorMessage });
     }
   },
@@ -178,4 +238,48 @@ export const courseController = {
    * Obtiene todos los cursos disponibles en la plataforma
    * @route GET /api/courses
    */
+  // async getAllCourses(req: Request, res: Response) {
+  //   try {
+  //     const courses = await courseService.getAllCourses();
+  //     return res.status(200).json(courses);
+  //   } catch (error: unknown) {
+  //     const errorMessage =
+  //       error instanceof Error ? error.message : "Error al obtener los cursos";
+  //     return res.status(500).json({ message: errorMessage });
+  //   }
+  // },
+
+  /**
+   * Elimina a un estudiante de un curso (solo accesible por el profesor)
+   * @route DELETE /api/courses/:courseId/students/:studentId
+   */
+  async removeStudent(req: Request, res: Response) {
+    try {
+      const { courseId, studentId } = req.params;
+      const professorId = req.user?.id;
+      if (typeof studentId !== "string" || !/^\d+$/.test(studentId)) {
+        return res.status(400).json({ message: "ID de estudiante inválido" });
+      }
+      if (typeof courseId !== "string" || !/^\d+$/.test(courseId)) {
+        return res.status(400).json({ message: "ID de curso inválido" });
+      }
+
+      // Verificar que el curso pertenezca al profesor
+      const course = await courseService.getCourseById(Number(courseId));
+      if (course.creatorId !== Number(professorId)) {
+        return res.status(403).json({
+          message: "No tienes permiso para eliminar estudiantes de este curso",
+        });
+      }
+
+      await courseService.removeStudent(Number(courseId), studentId);
+      return res.status(204).send();
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Error al eliminar al estudiante";
+      return res.status(500).json({ message: errorMessage });
+    }
+  },
 };

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useAuth } from '../../modules/auth/hooks/useAuth'
 import { Sidebar } from '../components/Sidebar'
 import type { SidebarSection } from '../types'
+import { Toaster } from 'react-hot-toast'
 
 interface DashboardLayoutProps<T extends string> {
   sections: SidebarSection<T>[]
@@ -83,6 +84,7 @@ export const DashboardLayout = <T extends string>({
         {/* Área de contenido principal */}
 
         {children}
+        <Toaster position="bottom-right" />
       </div>
     </div>
   )

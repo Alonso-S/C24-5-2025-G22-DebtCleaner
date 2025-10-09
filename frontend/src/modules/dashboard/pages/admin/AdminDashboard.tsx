@@ -4,7 +4,6 @@ import { UsersIcon } from '../../../../shared/components/icons/UsersIcon'
 import { DashboardLayout } from '../../../../shared/layouts/DashboardLayout'
 
 export const AdminDashboard = () => {
-  const [activeSection, setActiveSection] = useState('users')
   const adminSections = [
     {
       id: 'users',
@@ -13,6 +12,8 @@ export const AdminDashboard = () => {
       component: <UserRoleManagement />,
     },
   ]
+  const [activeSection, setActiveSection] = useState(adminSections[0].id)
+
   return (
     <DashboardLayout
       sections={adminSections}

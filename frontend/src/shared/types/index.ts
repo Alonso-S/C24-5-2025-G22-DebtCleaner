@@ -12,3 +12,10 @@ export type SidebarSection<T extends string> = {
   label: string
   icon?: React.ReactNode
 }
+
+export interface Student {
+  id: string
+  name: string
+  email: string
+  role: Role
+}

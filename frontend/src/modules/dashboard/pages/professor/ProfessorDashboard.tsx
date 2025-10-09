@@ -1,6 +1,11 @@
 import { useState } from 'react'
 import { DashboardLayout } from '../../../../shared/layouts/DashboardLayout'
 import { HomeIcon } from '../../../../shared/components/icons/HomeIcon'
+import { PlusCircleIcon } from '../../../../shared/components/icons/PlusCircleIcon'
+import { CreateCourseForm } from '../../../course/components/CreateCourseForm'
+import { BookOpenIcon } from '../../../../shared/components/icons/BookOpenIcon'
+import { CourseList } from '../../../course/components/CourseList'
+import HomeSection from '../../components/professor/HomeSection'
 
 export const ProfessorDashboard = () => {
   const [activeSection, setActiveSection] = useState('inicio')
@@ -9,11 +14,19 @@ export const ProfessorDashboard = () => {
       id: 'inicio',
       label: 'Inicio',
       icon: <HomeIcon />,
-      component: (
-        <>
-          <div>Inicio</div>
-        </>
-      ),
+      component: <HomeSection setActiveSection={setActiveSection} />,
+    },
+    {
+      id: 'cursos',
+      label: 'Mis Cursos',
+      icon: <BookOpenIcon />,
+      component: <CourseList />,
+    },
+    {
+      id: 'crear-curso',
+      label: 'Crear Curso',
+      icon: <PlusCircleIcon />,
+      component: <CreateCourseForm />,
     },
   ]
   return (
@@ -22,8 +35,8 @@ export const ProfessorDashboard = () => {
       activeSection={activeSection}
       setActiveSection={setActiveSection}
     >
-      <main className="flex-1 overflow-y-auto bg-gray-50 p-6">
-        <div className="mx-auto max-w-7xl">
+      <main className="flex-1 overflow-y-auto bg-gray-50 ">
+        <div className="mx-auto max-w-7xl h-full">
           {professorSections.find((section) => section.id === activeSection)?.component}
         </div>
       </main>

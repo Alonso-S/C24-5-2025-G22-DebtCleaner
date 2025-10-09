@@ -8,22 +8,6 @@ import { validateRequest } from "../validators/courseValidator";
 
 const courseRouter = Router();
 
-// Rutas para profesores
-courseRouter.post(
-  "/",
-  authenticate,
-  authorize(["PROFESSOR", "ADMIN"]),
-  validateRequest("createCourse"),
-  courseController.createCourse
-);
-
-courseRouter.get(
-  "/professor",
-  authenticate,
-  authorize(["PROFESSOR", "ADMIN"]),
-  courseController.getCoursesByProfessor
-);
-
 courseRouter.post(
   "/enroll",
   authenticate,
@@ -46,7 +30,49 @@ courseRouter.post(
   courseController.joinCourse
 );
 
+courseRouter.get(
+  "/professor",
+  authenticate,
+  authorize(["PROFESSOR", "ADMIN"]),
+  courseController.getCoursesByProfessor
+);
+courseRouter.delete(
+  "/:courseId/students/:studentId",
+  authenticate,
+  authorize(["PROFESSOR", "ADMIN"]),
+  courseController.removeStudent
+);
+
+courseRouter.get(
+  "/:id/students",
+  authenticate,
+  courseController.getStudentsByCourse
+);
+
 // Rutas generales
 courseRouter.get("/:id", authenticate, courseController.getCourseById);
+
+// Rutas para profesores
+courseRouter.post(
+  "/",
+  authenticate,
+  authorize(["PROFESSOR", "ADMIN"]),
+  validateRequest("createCourse"),
+  courseController.createCourse
+);
+
+courseRouter.put(
+  "/:id",
+  authenticate,
+  authorize(["PROFESSOR", "ADMIN"]),
+  validateRequest("createCourse"),
+  courseController.updateCourseById
+);
+courseRouter.delete(
+  "/:id",
+  authenticate,
+  authorize(["PROFESSOR", "ADMIN"]),
+  courseController.deleteCourseById
+);
 
 export default courseRouter;

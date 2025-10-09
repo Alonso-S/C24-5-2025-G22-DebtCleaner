@@ -9,6 +9,23 @@ import { generateUniqueAccessCode } from "../utils/codeGenerator";
 const prisma = new PrismaClient();
 
 export const courseRepository = {
+  async getStudentsByCourse(courseId: number) {
+    return prisma.user.findMany({
+      where: {
+        enrollments: {
+          some: {
+            courseId,
+          },
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+      },
+    });
+  },
   async createCourse(data: CreateCourseDTO) {
     const accessCode = await generateUniqueAccessCode();
 
@@ -21,15 +38,21 @@ export const courseRepository = {
           connect: { id: data.creatorId },
         },
       },
-      include: {
-        creator: {
-          select: {
-            id: true,
-            name: true,
-            role: true,
-          },
-        },
+    });
+  },
+  async updateCourseById(id: number, data: CreateCourseDTO) {
+    return prisma.course.update({
+      where: { id },
+      data: {
+        name: data.name,
+        description: data.description ?? null,
       },
+    });
+  },
+
+  async deleteCourseById(id: number) {
+    return prisma.course.delete({
+      where: { id },
     });
   },
 
@@ -77,32 +100,17 @@ export const courseRepository = {
 
   async getCoursesByCreatorId(creatorId: number) {
     return prisma.course.findMany({
-      where: {
-        creatorId,
-      },
-      include: {
-        creator: {
-          select: {
-            id: true,
-            name: true,
-            role: true,
-          },
-        },
-        enrollments: {
-          include: {
-            user: {
-              select: {
-                id: true,
-                name: true,
-                role: true,
-              },
-            },
-          },
-        },
+      where: { creatorId },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        accessCode: true,
+        createdAt: true,
+        updatedAt: true,
       },
     });
   },
-
   async getEnrolledCoursesByStudentId(studentId: number) {
     return prisma.enrollment.findMany({
       where: {
@@ -185,5 +193,16 @@ export const courseRepository = {
     });
 
     return !!enrollment;
+  },
+
+  async removeStudent(courseId: number, studentId: string) {
+    return prisma.enrollment.delete({
+      where: {
+        userId_courseId: {
+          userId: Number(studentId),
+          courseId,
+        },
+      },
+    });
   },
 };

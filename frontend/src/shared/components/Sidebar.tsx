@@ -62,7 +62,7 @@ export const Sidebar = <T extends string>({
 
       {/* Sidebar para desktop */}
       <div className="hidden lg:flex lg:flex-shrink-0">
-        <div className="flex w-64 flex-col">
+        <div className="flex w-55 flex-col">
           <div className="flex min-h-0 flex-1 flex-col bg-white bg-opacity-80 backdrop-blur-md border-r border-gray-200">
             <div className="flex flex-1 flex-col overflow-y-auto pt-5 pb-4">
               <div className="flex items-center justify-center flex-shrink-0 px-4 mb-5">

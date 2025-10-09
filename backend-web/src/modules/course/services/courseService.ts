@@ -6,8 +6,17 @@ import type {
 } from "../types/course";
 
 export const courseService = {
+  async getStudentsByCourse(courseId: number) {
+    return courseRepository.getStudentsByCourse(courseId);
+  },
   async createCourse(data: CreateCourseDTO) {
     return courseRepository.createCourse(data);
+  },
+  async deleteCourseById(id: number) {
+    return courseRepository.deleteCourseById(id);
+  },
+  async updateCourseById(id: number, data: CreateCourseDTO) {
+    return courseRepository.updateCourseById(id, data);
   },
 
   async getCourseById(id: number) {
@@ -60,5 +69,8 @@ export const courseService = {
       userId: data.userId,
       courseId: course.id,
     });
+  },
+  async removeStudent(courseId: number, studentId: string) {
+    return courseRepository.removeStudent(courseId, studentId);
   },
 };
