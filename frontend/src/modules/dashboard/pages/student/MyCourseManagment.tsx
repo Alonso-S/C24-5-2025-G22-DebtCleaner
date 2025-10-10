@@ -10,14 +10,14 @@ interface MyCourseManagementProps {
 
 export const MyCourseManagement = ({ courseId, onReturn }: MyCourseManagementProps) => {
   const tabs = [
-    { id: 'general', label: 'Información General' },
+    // { id: 'general', label: 'Información General' },
     {
       id: 'estudiantes',
       label: 'Estudiantes',
       component: <CourseStudentsSection courseId={courseId} />,
     },
     { id: 'tareas', label: 'Tareas', component: <StudentCourseTasks courseId={courseId} /> },
-    { id: 'materiales', label: 'Materiales', component: <div>Materiales</div> },
+    // { id: 'materiales', label: 'Materiales', component: <div>Materiales</div> },
   ]
 
   // Estado para controlar la pestaña activa

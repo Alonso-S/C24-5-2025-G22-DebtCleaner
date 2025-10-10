@@ -1,16 +1,16 @@
-import React from 'react';
+import React from 'react'
 
 interface SubmissionVersion {
-  id: number;
-  versionNumber: number;
-  fileUrl?: string;
-  gitCommitHash?: string | null;
-  createdAt: string;
+  id: number
+  versionNumber: number
+  fileUrl?: string
+  gitCommitHash?: string | null
+  createdAt: string
 }
 
 interface SubmissionHistoryProps {
-  versions: SubmissionVersion[];
-  submissionGitRepositoryUrl?: string | null;
+  versions: SubmissionVersion[]
+  submissionGitRepositoryUrl?: string | null
 }
 
 const SubmissionHistory: React.FC<SubmissionHistoryProps> = ({
@@ -38,7 +38,7 @@ const SubmissionHistory: React.FC<SubmissionHistoryProps> = ({
               <div className="flex items-center space-x-3">
                 {v.fileUrl ? (
                   <a
-                    href={v.fileUrl}
+                    href={`${import.meta.env.VITE_API_URL}${v.fileUrl}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-blue-600"
@@ -69,7 +69,7 @@ const SubmissionHistory: React.FC<SubmissionHistoryProps> = ({
         </ul>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default SubmissionHistory;
+export default SubmissionHistory

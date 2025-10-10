@@ -58,7 +58,6 @@ export const TaskProfessorSection = ({ courseId }: { courseId: number }) => {
         />
       ) : (
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-800 mb-4">Tareas</h1>
           {projects.length === 0 ? (
             <EmptyState
               title="No hay tareas disponibles"

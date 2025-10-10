@@ -50,9 +50,9 @@ export const StudentTaskPanel = ({ project }: StudentTaskPanelProps) => {
   const [commits, setCommits] = useState<{ sha: string; message?: string; date?: string }[]>([])
   const [loadingCommits, setLoadingCommits] = useState(false)
   const [selectedSha, setSelectedSha] = useState<string | null>(null)
-  const [activeTab, setActiveTab] = useState<'submission' | 'history' | 'comments'>('submission');
-  const [gitLinkSuccess, setGitLinkSuccess] = useState<boolean | null>(null);
-  const [uploadSuccess, setUploadSuccess] = useState<boolean | null>(null);
+  const [activeTab, setActiveTab] = useState<'submission' | 'history' | 'comments'>('submission')
+  const [gitLinkSuccess, setGitLinkSuccess] = useState<boolean | null>(null)
+  const [uploadSuccess, setUploadSuccess] = useState<boolean | null>(null)
 
   const fetchSubmission = async () => {
     setLoading(true)
@@ -121,25 +121,24 @@ export const StudentTaskPanel = ({ project }: StudentTaskPanelProps) => {
   }
 
   const handleLinkGit = async (url: string) => {
-    setGitLinkSuccess(null);
+    setGitLinkSuccess(null)
     setError(null)
     setSuccess(null)
-    setGitUrl(url);
+    setGitUrl(url)
     const validation = validateGitUrl(url.trim())
     if (validation) {
       setError(validation)
-      setGitLinkSuccess(false);
+      setGitLinkSuccess(false)
       return
     }
     if (!user?.id) {
       setError('Usuario no autenticado')
-      setGitLinkSuccess(false);
+      setGitLinkSuccess(false)
       return
     }
 
     try {
       setLinking(true)
-      // backend expects projectId, userId, gitRepositoryUrl and optional gitCommitHash in body
       type GitPayload = {
         projectId: number
         userId: number
@@ -154,7 +153,7 @@ export const StudentTaskPanel = ({ project }: StudentTaskPanelProps) => {
       if (selectedSha) payload.gitCommitHash = selectedSha
       await api.post('/projects/submissions/git', payload)
       setSuccess('Repositorio vinculado correctamente')
-      setGitLinkSuccess(true);
+      setGitLinkSuccess(true)
       setGitUrl('')
       // refresh submission to show linked repo
       await fetchSubmission()
@@ -166,7 +165,7 @@ export const StudentTaskPanel = ({ project }: StudentTaskPanelProps) => {
         message = maybe.response?.data?.message ?? null
       }
       setError(message || 'Error al vincular el repositorio')
-      setGitLinkSuccess(false);
+      setGitLinkSuccess(false)
     } finally {
       setLinking(false)
     }
@@ -198,17 +197,17 @@ export const StudentTaskPanel = ({ project }: StudentTaskPanelProps) => {
   }
 
   const handleUpload = async (file: File) => {
-    setUploadSuccess(null);
+    setUploadSuccess(null)
     setError(null)
     setSuccess(null)
     if (!file) {
       setError('Selecciona un archivo .zip')
-      setUploadSuccess(false);
+      setUploadSuccess(false)
       return
     }
     if (!user?.id) {
       setError('Usuario no autenticado')
-      setUploadSuccess(false);
+      setUploadSuccess(false)
       return
     }
 
@@ -224,14 +223,14 @@ export const StudentTaskPanel = ({ project }: StudentTaskPanelProps) => {
         headers: { 'Content-Type': 'multipart/form-data' },
       })
       setSuccess('Archivo subido correctamente')
-      setUploadSuccess(true);
+      setUploadSuccess(true)
       setSelectedFile(null)
       // refresh
       await fetchSubmission()
     } catch (err) {
       console.error(err)
       setError('Error al subir el archivo')
-      setUploadSuccess(false);
+      setUploadSuccess(false)
     } finally {
       setUploading(false)
     }
@@ -271,27 +270,33 @@ export const StudentTaskPanel = ({ project }: StudentTaskPanelProps) => {
             <button
               onClick={() => setActiveTab('submission')}
               className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                ${activeTab === 'submission'
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
+                ${
+                  activeTab === 'submission'
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
             >
               Entrega
             </button>
             <button
               onClick={() => setActiveTab('history')}
               className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                ${activeTab === 'history'
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
+                ${
+                  activeTab === 'history'
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
             >
               Historial
             </button>
             <button
               onClick={() => setActiveTab('comments')}
               className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                ${activeTab === 'comments'
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
+                ${
+                  activeTab === 'comments'
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
             >
               Comentarios
             </button>
@@ -324,7 +329,7 @@ export const StudentTaskPanel = ({ project }: StudentTaskPanelProps) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default StudentTaskPanel;
+export default StudentTaskPanel

@@ -11,13 +11,14 @@ interface CourseManagementProps {
 
 export const CourseManagement = ({ courseId, onReturn }: CourseManagementProps) => {
   const tabs = [
-    { id: 'general', label: 'Información General' },
+    // { id: 'general', label: 'Información General' },
+    { id: 'tareas', label: 'Tareas', component: <CourseTasksSection courseId={courseId} /> },
+
     {
       id: 'estudiantes',
       label: 'Estudiantes',
       component: <CourseStudentsSection courseId={courseId} />,
     },
-    { id: 'tareas', label: 'Tareas', component: <CourseTasksSection courseId={courseId} /> },
     { id: 'entregas', label: 'Entregas', component: <TaskProfessorSection courseId={courseId} /> },
   ]
 
