@@ -39,6 +39,7 @@ export const authService = {
       code,
       CODE_EXPIRATION_SECONDS
     );
+    console.log(code);
 
     // Enviar email
     await mailerService.sendLoginCode(user.email, user.name, code);

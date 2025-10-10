@@ -1,56 +1,56 @@
-import { useState } from 'react'
+import { lazy, useState } from 'react'
 import { DashboardLayout } from '../../../../shared/layouts/DashboardLayout'
 import { HomeIcon } from '../../../../shared/components/icons/HomeIcon'
-import JoinCourse from '../../components/JoinCourse'
-import CourseListSection from './CourseListSection'
-import { authStore } from '../../../../shared/store/authStore'
+import { BookOpenIcon } from '../../../../shared/components/icons/BookOpenIcon'
+import { PlusCircleIcon } from '../../../../shared/components/icons/PlusCircleIcon'
+import useTabs from '../../../../shared/hooks/useTabs'
+import { useAuth } from '../../../auth/hooks/useAuth'
 
-const Inicio = () => (
-  <div className="space-y-6">
-    <div className="bg-white/60 backdrop-blur-sm rounded-xl p-6 shadow">
-      <h2 className="text-xl font-semibold">Bienvenido</h2>
-      <p className="text-sm text-gray-700">Aquí verás tus clases y tareas.</p>
-      <button
-        onClick={() => {
-          const token = authStore.token || ''
-
-          // codificar para URL (evitar problemas con caracteres especiales)
-          const encodedToken = encodeURIComponent(token)
-
-          // armar la URL que redirige al backend pasando el token en query param `state`
-          const url = `${import.meta.env.VITE_API_URL}/api/github/authorize?state=${encodedToken}`
-
-          // redireccionar navegador
-          window.location.href = url
-        }}
-        className="mt-4 bg-blue-500 text-white py-2 px-4 rounded"
-      >
-        Conectar con Github
-      </button>
-    </div>
-  </div>
-)
+// Lazy load tab components for better performance
+const HomeTab = lazy(() => import('../../components/student/HomeTab'))
+const CoursesTab = lazy(() => import('../../components/student/CoursesTab'))
+const JoinCourseTab = lazy(() => import('../../components/student/JoinCourseTab'))
 
 export const StudentDashboard = () => {
+  const { user } = useAuth()
   const [activeSection, setActiveSection] = useState('inicio')
+  const { activeTab, setActiveTab } = useTabs('home')
+  
+  // Define sidebar sections
   const studentSections = [
     {
       id: 'inicio',
       label: 'Inicio',
       icon: <HomeIcon />,
-      component: <Inicio />,
     },
     {
       id: 'cursos',
       label: 'Mis Cursos',
-      icon: <HomeIcon />,
-      component: <CourseListSection />,
+      icon: <BookOpenIcon />,
     },
     {
       id: 'unirse-curso',
       label: 'Unirse a un Curso',
-      icon: <HomeIcon />,
-      component: <JoinCourse />,
+      icon: <PlusCircleIcon />,
+    },
+  ]
+  
+  // Define tabs for the dashboard
+  const dashboardTabs = [
+    {
+      id: 'home',
+      label: 'Resumen',
+      component: <HomeTab userName={user?.name} />,
+    },
+    {
+      id: 'courses',
+      label: 'Mis Cursos',
+      component: <CoursesTab />,
+    },
+    {
+      id: 'join',
+      label: 'Unirse a un Curso',
+      component: <JoinCourseTab />,
     },
   ]
 
@@ -59,12 +59,9 @@ export const StudentDashboard = () => {
       sections={studentSections}
       activeSection={activeSection}
       setActiveSection={setActiveSection}
-    >
-      <main className="flex-1 overflow-y-auto bg-gray-50 p-6">
-        <div className="mx-auto max-w-7xl">
-          {studentSections.find((section) => section.id === activeSection)?.component}
-        </div>
-      </main>
-    </DashboardLayout>
+      tabs={dashboardTabs}
+      activeTab={activeTab}
+      setActiveTab={setActiveTab}
+    />
   )
 }

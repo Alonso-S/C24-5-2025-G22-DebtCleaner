@@ -14,8 +14,18 @@ export type SidebarSection<T extends string> = {
 }
 
 export interface Student {
-  id: string
+  id: number
   name: string
   email: string
   role: Role
+}
+
+export interface SubmissionSummary {
+  id: number
+  userId: number
+  projectId: number
+  grade?: number | null
+  createdAt: string
+  fileUrl?: string | null
+  gitRepositoryUrl?: string | null
 }

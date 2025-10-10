@@ -19,7 +19,6 @@ export const CourseManagement = ({ courseId, onReturn }: CourseManagementProps) 
     },
     { id: 'tareas', label: 'Tareas', component: <CourseTasksSection courseId={courseId} /> },
     { id: 'entregas', label: 'Entregas', component: <TaskProfessorSection courseId={courseId} /> },
-    { id: 'materiales', label: 'Materiales', component: <div>Materiales</div> },
   ]
 
   // Estado para controlar la pestaña activa
@@ -27,7 +26,7 @@ export const CourseManagement = ({ courseId, onReturn }: CourseManagementProps) 
 
   return (
     <div
-      className="animate-fade-in p-6 overflow-auto"
+      className="animate-fade-in overflow-auto"
       style={{ scrollBehavior: 'smooth', height: '100%' }}
     >
       {/* Cabecera con botón de regreso */}

@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { api } from '../../../core/api/apiClient'
 import { useAuth } from '../../auth/hooks/useAuth'
 import SubmissionComments from './SubmissionComments'
+import SubmissionForm from './SubmissionForm'
+import SubmissionHistory from './SubmissionHistory'
 
 interface Project {
   id: number
@@ -48,6 +50,9 @@ export const StudentTaskPanel = ({ project }: StudentTaskPanelProps) => {
   const [commits, setCommits] = useState<{ sha: string; message?: string; date?: string }[]>([])
   const [loadingCommits, setLoadingCommits] = useState(false)
   const [selectedSha, setSelectedSha] = useState<string | null>(null)
+  const [activeTab, setActiveTab] = useState<'submission' | 'history' | 'comments'>('submission');
+  const [gitLinkSuccess, setGitLinkSuccess] = useState<boolean | null>(null);
+  const [uploadSuccess, setUploadSuccess] = useState<boolean | null>(null);
 
   const fetchSubmission = async () => {
     setLoading(true)
@@ -115,16 +120,20 @@ export const StudentTaskPanel = ({ project }: StudentTaskPanelProps) => {
     return null
   }
 
-  const handleLinkGit = async () => {
+  const handleLinkGit = async (url: string) => {
+    setGitLinkSuccess(null);
     setError(null)
     setSuccess(null)
-    const validation = validateGitUrl(gitUrl.trim())
+    setGitUrl(url);
+    const validation = validateGitUrl(url.trim())
     if (validation) {
       setError(validation)
+      setGitLinkSuccess(false);
       return
     }
     if (!user?.id) {
       setError('Usuario no autenticado')
+      setGitLinkSuccess(false);
       return
     }
 
@@ -140,11 +149,12 @@ export const StudentTaskPanel = ({ project }: StudentTaskPanelProps) => {
       const payload: GitPayload = {
         projectId: project.id,
         userId: Number(user.id),
-        gitRepositoryUrl: gitUrl.trim(),
+        gitRepositoryUrl: url.trim(),
       }
       if (selectedSha) payload.gitCommitHash = selectedSha
       await api.post('/projects/submissions/git', payload)
       setSuccess('Repositorio vinculado correctamente')
+      setGitLinkSuccess(true);
       setGitUrl('')
       // refresh submission to show linked repo
       await fetchSubmission()
@@ -156,6 +166,7 @@ export const StudentTaskPanel = ({ project }: StudentTaskPanelProps) => {
         message = maybe.response?.data?.message ?? null
       }
       setError(message || 'Error al vincular el repositorio')
+      setGitLinkSuccess(false);
     } finally {
       setLinking(false)
     }
@@ -186,20 +197,23 @@ export const StudentTaskPanel = ({ project }: StudentTaskPanelProps) => {
     }
   }
 
-  const handleUpload = async () => {
+  const handleUpload = async (file: File) => {
+    setUploadSuccess(null);
     setError(null)
     setSuccess(null)
-    if (!selectedFile) {
+    if (!file) {
       setError('Selecciona un archivo .zip')
+      setUploadSuccess(false);
       return
     }
     if (!user?.id) {
       setError('Usuario no autenticado')
+      setUploadSuccess(false);
       return
     }
 
     const formData = new FormData()
-    formData.append('file', selectedFile)
+    formData.append('file', file)
     // validator expects projectId and userId in body
     formData.append('projectId', String(project.id))
     formData.append('userId', String(user.id))
@@ -210,12 +224,14 @@ export const StudentTaskPanel = ({ project }: StudentTaskPanelProps) => {
         headers: { 'Content-Type': 'multipart/form-data' },
       })
       setSuccess('Archivo subido correctamente')
+      setUploadSuccess(true);
       setSelectedFile(null)
       // refresh
       await fetchSubmission()
     } catch (err) {
       console.error(err)
       setError('Error al subir el archivo')
+      setUploadSuccess(false);
     } finally {
       setUploading(false)
     }
@@ -249,155 +265,66 @@ export const StudentTaskPanel = ({ project }: StudentTaskPanelProps) => {
           <div className="mb-2 text-sm text-gray-600">Aún no has entregado esta tarea.</div>
         )}
 
-        <div className="mb-3">
-          <label className="block text-sm font-medium text-gray-700">Archivo ZIP</label>
-          <input type="file" accept=".zip" onChange={onFileChange} className="mt-1" />
-          {selectedFile && (
-            <p className="text-sm text-gray-600">Seleccionado: {selectedFile.name}</p>
-          )}
+        {/* Tab Navigation */}
+        <div className="border-b border-gray-200">
+          <nav className="-mb-px flex space-x-8" aria-label="Tabs">
+            <button
+              onClick={() => setActiveTab('submission')}
+              className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
+                ${activeTab === 'submission'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
+            >
+              Entrega
+            </button>
+            <button
+              onClick={() => setActiveTab('history')}
+              className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
+                ${activeTab === 'history'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
+            >
+              Historial
+            </button>
+            <button
+              onClick={() => setActiveTab('comments')}
+              className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
+                ${activeTab === 'comments'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
+            >
+              Comentarios
+            </button>
+          </nav>
         </div>
-        <div className="mb-3 border-t pt-4">
-          <h5 className="font-medium mb-2">Vincular repositorio Git</h5>
-          <p className="text-sm text-gray-600 mb-2">
-            Puedes vincular tu repositorio de GitHub como entrega alternativa.
-          </p>
-          <div className="flex space-x-2 items-center">
-            <input
-              type="text"
-              placeholder="https://github.com/usuario/repositorio"
-              value={gitUrl}
-              onChange={(e) => setGitUrl(e.target.value)}
-              className="p-2 border rounded w-full"
+
+        {/* Tab Content */}
+        <div className="mt-6">
+          {activeTab === 'submission' && (
+            <SubmissionForm
+              onFileUpload={handleUpload}
+              onGitLink={handleLinkGit}
+              isUploading={uploading}
+              isLinkingGit={linking}
+              gitLinkSuccess={gitLinkSuccess}
+              uploadSuccess={uploadSuccess}
             />
-            <div className="flex space-x-2">
-              <button
-                onClick={fetchCommits}
-                className="px-3 py-2 bg-gray-200 rounded"
-                type="button"
-              >
-                {loadingCommits ? 'Cargando...' : 'Listar commits'}
-              </button>
-              <button
-                onClick={handleLinkGit}
-                disabled={linking}
-                className="px-3 py-2 bg-green-600 text-white rounded disabled:opacity-50"
-                type="button"
-              >
-                {linking ? 'Vinculando...' : 'Vincular'}
-              </button>
-            </div>
-          </div>
-
-          {commits.length > 0 && (
-            <div className="mt-3">
-              <label className="block text-sm">Seleccionar commit</label>
-              <select
-                value={selectedSha ?? ''}
-                onChange={(e) => setSelectedSha(e.target.value)}
-                className="mt-1 p-2 border rounded w-full"
-              >
-                <option value="">-- Último commit --</option>
-                {commits.map((c) => (
-                  <option key={c.sha} value={c.sha}>
-                    {c.sha.slice(0, 7)} - {c.message}
-                  </option>
-                ))}
-              </select>
-            </div>
           )}
-
-          {submission?.gitRepositoryUrl && (
-            <div className="mt-2 text-sm">
-              Repositorio vinculado:{' '}
-              <a
-                href={submission.gitRepositoryUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="text-blue-600"
-              >
-                {submission.gitRepositoryUrl}
-              </a>
-            </div>
+          {activeTab === 'history' && (
+            <SubmissionHistory
+              versions={versions}
+              submissionGitRepositoryUrl={submission?.gitRepositoryUrl}
+            />
           )}
-          {/* Comentarios / hilo de discusión */}
-          {submission?.id && <SubmissionComments submissionId={submission.id} />}
+          {activeTab === 'comments' && submission?.id && (
+            <SubmissionComments submissionId={submission.id} />
+          )}
+          {error && <p className="text-sm text-red-600 mb-2">{error}</p>}
+          {success && <p className="text-sm text-green-600 mb-2">{success}</p>}
         </div>
-        {error && <p className="text-sm text-red-600 mb-2">{error}</p>}
-        {success && <p className="text-sm text-green-600 mb-2">{success}</p>}
-        <div className="flex space-x-2">
-          <button
-            onClick={handleUpload}
-            disabled={uploading}
-            className="px-3 py-2 bg-blue-600 text-white rounded disabled:opacity-50"
-          >
-            {uploading ? 'Subiendo...' : 'Subir ZIP'}
-          </button>
-          <button
-            onClick={() => {
-              setSelectedFile(null)
-              setError(null)
-              setSuccess(null)
-            }}
-            className="px-3 py-2 bg-gray-100 rounded"
-          >
-            Limpiar
-          </button>
-        </div>
-      </div>
-
-      <div>
-        <h4 className="font-medium mb-2">Historial de entregas</h4>
-        {versions.length === 0 ? (
-          <div className="text-sm text-gray-600">No hay entregas previas.</div>
-        ) : (
-          <ul className="space-y-2">
-            {versions.map((v) => (
-              <li
-                key={v.id}
-                className="flex justify-between items-center p-2 bg-white rounded border"
-              >
-                <div>
-                  <div className="font-medium">Versión {v.versionNumber}</div>
-                  <div className="text-xs text-gray-500">
-                    {new Date(v.createdAt).toLocaleString()}
-                  </div>
-                </div>
-                <div className="flex items-center space-x-3">
-                  {v.fileUrl ? (
-                    <a
-                      href={v.fileUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600"
-                    >
-                      Descargar
-                    </a>
-                  ) : null}
-
-                  {v.gitCommitHash ? (
-                    submission?.gitRepositoryUrl ? (
-                      <a
-                        href={`${submission.gitRepositoryUrl.replace(/\.git$/, '')}/commit/${v.gitCommitHash}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-indigo-600 text-sm"
-                      >
-                        Commit {v.gitCommitHash.slice(0, 7)}
-                      </a>
-                    ) : (
-                      <div className="text-sm text-gray-700">
-                        Commit {v.gitCommitHash.slice(0, 7)}
-                      </div>
-                    )
-                  ) : null}
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default StudentTaskPanel
+export default StudentTaskPanel;

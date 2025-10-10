@@ -1,12 +1,13 @@
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import { useAuth } from '../../modules/auth/hooks/useAuth'
 import { Sidebar } from '../components/Sidebar'
+
 import type { SidebarSection } from '../types'
 import { Toaster } from 'react-hot-toast'
 
 interface DashboardLayoutProps<T extends string> {
   sections: SidebarSection<T>[]
-  children: React.ReactNode
+  children?: React.ReactNode
   activeSection: T
   setActiveSection: (section: T) => void
 }
@@ -15,6 +16,13 @@ const roleLabels: Record<string, string> = {
   ADMIN: 'ADMINISTRADOR',
   PROFESSOR: 'PROFESOR',
 }
+
+// Componente de carga para usar con Suspense
+const LoadingSpinner = () => (
+  <div className="flex justify-center items-center h-32">
+    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+  </div>
+)
 
 export const DashboardLayout = <T extends string>({
   children,
@@ -82,9 +90,10 @@ export const DashboardLayout = <T extends string>({
           </div>
         </div>
         {/* Área de contenido principal */}
-
-        {children}
-        <Toaster position="bottom-right" />
+        <div className="flex-1 overflow-y-auto p-6">
+          <div className="mx-auto max-w-7xl">{children}</div>
+          <Toaster position="bottom-right" />
+        </div>
       </div>
     </div>
   )

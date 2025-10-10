@@ -98,14 +98,20 @@ export const projectRepository = {
   async updateSubmissionFileUrl(id: number, fileUrl: string) {
     return prisma.projectSubmission.update({
       where: { id },
-      data: { fileUrl },
+      data: {
+        fileUrl,
+        gitRepositoryUrl: null,
+      },
     });
   },
 
   async updateSubmissionGitRepository(id: number, gitRepositoryUrl: string) {
     return prisma.projectSubmission.update({
       where: { id },
-      data: { gitRepositoryUrl },
+      data: {
+        gitRepositoryUrl,
+        fileUrl: null,
+      },
     });
   },
 
