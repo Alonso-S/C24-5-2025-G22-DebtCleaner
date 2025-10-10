@@ -1,13 +1,20 @@
 import type { Request, Response } from "express";
 import { githubService } from "../services/githubService";
 import { AppError } from "../../../common/errors/AppError";
+import { APP_FRONTEND_URL } from "../../../config";
 
 export const githubController = {
   /**
    * Redirige al usuario a la página de autorización de GitHub
    */
   async authorize(req: Request, res: Response) {
-    const authUrl = githubService().getAuthorizationUrl();
+    const state = req.query.state;
+    if (!state || typeof state !== "string") {
+      return res.status(400).json({ error: "State parameter is required" });
+    }
+    console.log("Generating GitHub authorization URL");
+
+    const authUrl = githubService().getAuthorizationUrl(state);
     res.redirect(authUrl);
   },
 
@@ -17,6 +24,7 @@ export const githubController = {
   async callback(req: Request, res: Response) {
     try {
       const { code } = req.query;
+      console.log("GitHub callback received with code:", code);
 
       if (!code || typeof code !== "string") {
         throw new AppError("No authorization code provided", 400);
@@ -35,10 +43,10 @@ export const githubController = {
       await githubService().saveGitHubToken(Number(userId), accessToken);
 
       // Redirigir al frontend con un mensaje de éxito
-      res.redirect("/profile?github=connected");
+      res.redirect(`${APP_FRONTEND_URL}?github=connected`);
     } catch (error) {
       console.error("GitHub callback error:", error);
-      res.redirect("/profile?error=github_connection_failed");
+      res.redirect(`${APP_FRONTEND_URL}?error=github_connection_failed`);
     }
   },
 
@@ -87,6 +95,36 @@ export const githubController = {
     } catch (error) {
       console.error("Error disconnecting GitHub account:", error);
       throw new AppError("Failed to disconnect GitHub account", 500);
+    }
+  },
+  async getCommits(req: Request, res: Response) {
+    try {
+      const userId = req.user?.id;
+      const repo = req.query.repo;
+
+      if (!userId) {
+        throw new AppError("User not authenticated", 401);
+      }
+      if (!repo || typeof repo !== "string") {
+        return res
+          .status(400)
+          .json({
+            success: false,
+            message: "Query param repo is required (owner/repo)",
+          });
+      }
+
+      const commits = await githubService().listRepositoryCommits(
+        repo,
+        Number(userId)
+      );
+
+      res.json({ success: true, data: commits });
+    } catch (error) {
+      console.error("Error fetching commits:", error);
+      res
+        .status(500)
+        .json({ success: false, message: "Failed to fetch commits" });
     }
   },
 };

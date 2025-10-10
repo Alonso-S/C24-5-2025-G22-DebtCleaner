@@ -140,6 +140,11 @@ export const projectValidator = {
       projectId: Joi.number().integer().positive().required(),
       userId: Joi.number().integer().positive().required(),
       gitRepositoryUrl: Joi.string().required(),
+      // gitCommitHash is optional; allow common SHA formats (7 to 40 hex chars) or null
+      gitCommitHash: Joi.string()
+        .pattern(/^[0-9a-fA-F]{7,40}$/)
+        .allow(null, "")
+        .optional(),
     });
 
     const { error } = schema.validate(req.body);

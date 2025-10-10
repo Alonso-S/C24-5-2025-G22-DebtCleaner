@@ -1,15 +1,14 @@
 import { useState } from 'react'
-import { ArrowLeftIcon } from '../../../shared/components/icons/ArrowLeftIcon'
-import { CourseStudentsSection } from '../components/CourseStudentsSection'
-import CourseTasksSection from '../components/CourseTasksSection'
-import TaskProfessorSection from './TaskProfessorSection'
+import { ArrowLeftIcon } from '../../../../shared/components/icons/ArrowLeftIcon'
+import { CourseStudentsSection } from '../../../course/components/CourseStudentsSection'
+import StudentCourseTasks from '../../../course/components/StudentCourseTasks'
 
-interface CourseManagementProps {
+interface MyCourseManagementProps {
   courseId: number
   onReturn: () => void
 }
 
-export const CourseManagement = ({ courseId, onReturn }: CourseManagementProps) => {
+export const MyCourseManagement = ({ courseId, onReturn }: MyCourseManagementProps) => {
   const tabs = [
     { id: 'general', label: 'Información General' },
     {
@@ -17,8 +16,7 @@ export const CourseManagement = ({ courseId, onReturn }: CourseManagementProps) 
       label: 'Estudiantes',
       component: <CourseStudentsSection courseId={courseId} />,
     },
-    { id: 'tareas', label: 'Tareas', component: <CourseTasksSection courseId={courseId} /> },
-    { id: 'entregas', label: 'Entregas', component: <TaskProfessorSection courseId={courseId} /> },
+    { id: 'tareas', label: 'Tareas', component: <StudentCourseTasks courseId={courseId} /> },
     { id: 'materiales', label: 'Materiales', component: <div>Materiales</div> },
   ]
 
@@ -50,13 +48,13 @@ export const CourseManagement = ({ courseId, onReturn }: CourseManagementProps) 
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`
-                py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap
-                ${
-                  activeTab === tab.id
-                    ? 'border-[rgb(0,178,227)] text-[rgb(0,178,227)]'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }
-              `}
+                    py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap
+                    ${
+                      activeTab === tab.id
+                        ? 'border-[rgb(0,178,227)] text-[rgb(0,178,227)]'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    }
+                  `}
               aria-current={activeTab === tab.id ? 'page' : undefined}
             >
               {tab.label}

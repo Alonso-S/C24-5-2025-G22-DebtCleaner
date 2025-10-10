@@ -21,7 +21,7 @@ projectRouter.put(
 projectRouter.delete("/:id", projectController.deleteProject);
 
 // Rutas para entregas de proyectos
-projectRouter.use("/submissions", submissionRouter);
+projectRouter.use(submissionRouter);
 projectRouter.use("/comments", commentRoutes);
 
 export default projectRouter;

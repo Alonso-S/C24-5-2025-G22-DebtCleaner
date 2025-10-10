@@ -84,6 +84,7 @@ export type ConnectGitRepositoryDTO = {
   projectId: number;
   userId: number;
   gitRepositoryUrl: string;
+  gitCommitHash?: string | null;
   content?: string | null;
 };
 

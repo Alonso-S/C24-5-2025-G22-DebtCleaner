@@ -56,10 +56,12 @@ export const submissionController = {
           content: data.content || null,
           fileUrl: fileUrl,
         };
-        
+
         // Primero creamos la entrega sin fileUrl
-        submission = await projectService.createProjectSubmission(submissionData);
-        
+        submission = await projectService.createProjectSubmission(
+          submissionData
+        );
+
         // Luego actualizamos explícitamente el fileUrl
         submission = await projectService.updateSubmissionFileUrl(
           submission.id,
@@ -89,7 +91,8 @@ export const submissionController = {
   // Conectar un repositorio Git
   async connectGitRepository(req: Request, res: Response) {
     try {
-      const { projectId, userId, gitRepositoryUrl, content } = req.body;
+      const { projectId, userId, gitRepositoryUrl, content, gitCommitHash } =
+        req.body;
 
       // Crear la entrega con la URL del repositorio Git
       const data: ConnectGitRepositoryDTO = {
@@ -97,6 +100,7 @@ export const submissionController = {
         userId: Number(userId),
         content: content || null,
         gitRepositoryUrl,
+        gitCommitHash: gitCommitHash ?? null,
       };
 
       const submission = await projectService.connectGitRepository(data);

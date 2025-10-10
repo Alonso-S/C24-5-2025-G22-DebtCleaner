@@ -240,6 +240,7 @@ export const projectService = {
         data.gitRepositoryUrl,
         data.userId
       );
+      console.log("GitHub validation:", validation);
 
       if (!validation.isValid) {
         throw new AppError(

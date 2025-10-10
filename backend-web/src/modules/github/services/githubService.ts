@@ -10,8 +10,8 @@ export const githubService = () => ({
   /**
    * Genera la URL de autorización para GitHub OAuth
    */
-  getAuthorizationUrl(): string {
-    return `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${GITHUB_REDIRECT_URI}&scope=repo`;
+  getAuthorizationUrl(state: string): string {
+    return `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${GITHUB_REDIRECT_URI}&scope=repo&state=${state}`;
   },
 
   /**
@@ -101,6 +101,31 @@ export const githubService = () => ({
     } catch (error) {
       console.error("Error validating GitHub repository:", error);
       return { isValid: false };
+    }
+  },
+
+  listRepositoryCommits: async (repo: string, userId: number) => {
+    try {
+      const token = await githubRepository.getGitHubToken(userId);
+      if (!token) throw new Error("No GitHub token for user");
+
+      // repo expected as 'owner/repo'
+      const response = await axios.get(
+        `https://api.github.com/repos/${repo}/commits`,
+        {
+          headers: { Authorization: `token ${token}` },
+        }
+      );
+
+      // map to simple shape
+      return (response.data || []).map((c: any) => ({
+        sha: c.sha,
+        message: c.commit?.message,
+        date: c.commit?.committer?.date,
+      }));
+    } catch (error) {
+      console.error("Error listing repository commits:", error);
+      throw error;
     }
   },
 });

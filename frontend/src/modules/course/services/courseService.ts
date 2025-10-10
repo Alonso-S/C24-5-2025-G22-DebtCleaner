@@ -30,4 +30,20 @@ export const courseService = {
   joinCourse: async (courseCode: string): Promise<void> => {
     await api.post('/courses/join', { accessCode: courseCode })
   },
+  getStudentCourses: async (): Promise<CourseDetails[]> => {
+    const response = await api.get<CourseDetails[]>('/courses/enrolled')
+    return response.data
+  },
+
+  getCourseById: async (courseId: number): Promise<CourseDetails> => {
+    const response = await api.get<CourseDetails>(`/courses/${courseId}`)
+    return response.data
+  },
+  updateCourseById: async (
+    courseId: number,
+    courseData: CourseFormData
+  ): Promise<CourseDetails> => {
+    const response = await api.put<CourseDetails>(`/courses/${courseId}`, courseData)
+    return response.data
+  },
 }
